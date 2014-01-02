@@ -1,0 +1,354 @@
+import org.antlr.runtime.tree.CommonTree;
+import pcreparser.PCRE;
+import java.io.*;
+import java.util.*;
+
+
+public class mainclass
+{
+    public static void main(String[] args)
+    {
+        String rulesfilename = "..\\all_rules_http.rules";
+
+        try
+        {
+            // load rules.
+            File frules = new File(rulesfilename);
+            FileReader fr = new FileReader(rulesfilename);
+            BufferedReader br = new BufferedReader(fr);
+
+            ArrayList<String[]> pcres = new ArrayList<String[]>();
+
+            while (br.ready())
+            {
+                String[] pcreAndRule = parsePCRE(br.readLine());
+
+                if(pcreAndRule != null)
+                    pcres.add(pcreAndRule);
+            }
+
+            System.out.println("Loaded "+pcres.size()+" PCREs");
+
+            String res = "";
+            for(int i=0 ; i<pcres.size() ; i++)
+            {
+                res += "PCRE "+pcres.get(i)[1]+": "+pcres.get(i)[0]+"\r\n";
+                PCRE pcre = new PCRE(pcres.get(i)[0]);
+                res += recursive_walk(pcre.getCommonTree(), 0);
+                res += "------\r\n";
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter("..\\pcre_xmls.txt"));
+
+            bw.write(res, 0, res.length());
+            bw.flush();
+            bw.close();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static String[] parsePCRE(String rule)
+    {
+        if (rule.startsWith("#")) // comment - ignore this rule
+            return null;
+
+        if (!rule.contains("pcre:\"/"))
+            return null;
+
+        String[] res = new String[2];
+
+        int pcreStart = rule.indexOf("pcre:\"/") + "pcre:\"/".length();
+        int pcreEnd = rule.indexOf("\"; ", pcreStart);
+
+        String pcreWithOptions = rule.substring(pcreStart, pcreEnd);
+        res[0] = pcreWithOptions.substring(0, pcreWithOptions.lastIndexOf("/"));
+
+        int ruleidStart = rule.indexOf("sid:") + "sid:".length();
+        int ruleidEnd = rule.indexOf(";", ruleidStart)-1;
+
+        res[1] = rule.substring(ruleidStart, ruleidEnd);
+
+        return res;
+    }
+
+
+    private static String currentLiteral = "";
+    private static String recursive_walk(CommonTree tree, int indent)
+    {
+        StringBuilder builder = new StringBuilder();
+        String tokenName = pcreparser.PCREParser.tokenNames[tree.getType()];
+        String tokenText = !tree.getText().equals(tokenName) ? tree.getText() : "";
+
+        // combine literal elements into 1 element.
+        boolean addedLiteral = false;
+
+        if(tokenName.equals("ELEMENT") &&
+            tree.getChildCount() == 1 &&
+            pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChildren().get(0)).getType()].equals("LITERAL"))
+        {
+            CommonTree child = (CommonTree)tree.getChildren().get(0);
+            String childElementName = pcreparser.PCREParser.tokenNames[child.getType()];
+            if(currentLiteral.isEmpty()) // write start element
+            {
+                for(int i=0 ; i<indent ; i++)
+                    builder.append("\t");
+
+                builder.append("<").append(tokenName).append(" type='text'>\r\n");
+            }
+
+            currentLiteral += child.getText();
+
+            addedLiteral = true;
+
+            // if last element with literal child, then write - else, skip writing.
+            if(tree.childIndex == tree.parent.getChildCount()-1 ||
+               tree.parent.getChild(tree.childIndex+1).getChildCount() != 1 ||
+               !pcreparser.PCREParser.tokenNames[tree.parent.getChild(tree.childIndex+1).getChild(0).getType()].equals("LITERAL"))
+            {
+                for(int i=0 ; i<indent+1 ; i++)
+                    builder.append("\t");
+
+                currentLiteral = encodeXML(currentLiteral);
+
+                builder.append("<LITERAL text='").append(currentLiteral).append("' />\r\n");
+                currentLiteral = "";
+
+                for(int i=0 ; i<indent ; i++)
+                    builder.append("\t");
+
+                builder.append("</").append(tokenName).append(">\r\n");
+
+                return builder.toString();
+            }
+            else
+            {
+                return builder.toString();
+            }
+        }
+        else if(tokenName.equals("LITERAL"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<LITERAL text='").append(encodeXML(tree.getText())).append("' />\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("RANGE"))
+        {
+            String min = tree.getChild(0).getText();
+            String max = tree.getChild(1).getText();
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<RANGE min='").append(encodeXML(min)).append("' max='").append(encodeXML(max)).append("' />\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("NAMED_CAPTURING_GROUP_PYTHON"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<").append(tokenName).append(" name='").append(tree.getChild(0).getText()).append("' >\r\n");
+
+            List<CommonTree> children = tree.getChildren();
+            for(int i=1 ; i<children.size() ; i++)
+                builder.append(recursive_walk(children.get(i), indent+1));
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("</").append(tokenName).append(">\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("ELEMENT") &&
+                tree.getChildCount() == 1 &&
+                pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChild(0)).getType()].equals("NAMED_BACKREFERENCE_PYTHON"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<ELEMENT type='named backreference python' name='").append(tree.getChild(0).getChild(0).getText()).append("' />\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("ELEMENT") &&
+                tree.getChildCount() == 2 &&
+                pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChild(1)).getType()].equals("QUANTIFIER"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            CommonTree quantifierElement = (CommonTree)tree.getChild(1);
+
+            String min = quantifierElement.getChild(0).getText();
+            String max = quantifierElement.getChild(1).getText();
+
+            if(max.equals("2147483647"))
+                max = "INF";
+
+            String qualifierType = "";
+            if(tree.getChildCount() == 3)
+                qualifierType = pcreparser.PCREParser.tokenNames[tree.getChild(2).getType()];
+
+            StringBuilder quantifierText = new StringBuilder();
+
+            if(min.equals(max))
+            {
+                if(qualifierType.isEmpty())
+                    quantifierText.append("exact='").append(min).append("'");
+                else
+                    quantifierText.append("exact='").append("' type='").append(qualifierType).append("'");
+            }
+            else
+            {
+                if(qualifierType.isEmpty())
+                    quantifierText.append("min='").append(min).append("' max='").append(max).append("'");
+                else
+                    quantifierText.append("min='").append(min).append("' max='").append(max).append("' type='").append(qualifierType).append("'");
+            }
+
+            builder.append("<ELEMENT type='QUANTIFIER' ").append(quantifierText).append(">\r\n");
+
+            List<CommonTree> children = tree.getChildren();
+            for(int i=0 ; i<children.size()-1 ; i++)
+                builder.append(recursive_walk(children.get(i), indent+1));
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("</").append(tokenName).append(">\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("CAPTURING_GROUP"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<CAPTURING_GROUP type='").append(pcreparser.PCREParser.tokenNames[tree.getChild(0).getType()]).append("'>\r\n");
+
+            List<CommonTree> grandchildren = ((CommonTree)tree.getChild(0)).getChildren();
+            for(int i=0 ; i<grandchildren.size() ; i++)
+                builder.append(recursive_walk(grandchildren.get(i), indent+1));
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("</CAPTURING_GROUP>\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("ELEMENT") &&
+            tree.getChildCount() == 1 &&
+            pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChild(0)).getType()].equals("CAPTURING_GROUP"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<ELEMENT type='group'>\r\n");
+
+            List<CommonTree> children = tree.getChildren();
+            for(int i=0 ; i<children.size() ; i++)
+                builder.append(recursive_walk(children.get(i), indent+1));
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("</ELEMENT>\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("ELEMENT") &&
+                tree.getChildCount() == 1 &&
+                pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChild(0)).getType()].equals("NEGATIVE_LOOK_AHEAD"))
+        {
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<ELEMENT type='NEGATIVE_LOOK_AHEAD'>\r\n");
+
+            List<CommonTree> children = ((CommonTree)tree.getChild(0)).getChildren();
+            for(int i=0 ; i<children.size() ; i++)
+                builder.append(recursive_walk(children.get(i), indent+1));
+
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("</ELEMENT>\r\n");
+
+            return builder.toString();
+        }
+        else if(tokenName.equals("ELEMENT") &&
+                tree.getChildCount() == 1 &&
+                pcreparser.PCREParser.tokenNames[((CommonTree)tree.getChild(0)).getType()].equals("START_OF_SUBJECT"))
+        {
+            builder.append("<ELEMENT type='start_of_subject' />\r\n");
+            return builder.toString();
+        }
+        else
+        {
+            // default
+            for(int i=0 ; i<indent ; i++)
+                builder.append("\t");
+
+            builder.append("<").append(tokenName);
+
+            if(!tokenText.isEmpty())
+                builder.append(" text='"+tokenText+"'");
+
+            if(tree.getChildCount() == 0)
+                builder.append(" />\r\n");
+            else
+            {
+                builder.append(">\r\n");
+
+                List<CommonTree> children = tree.getChildren();
+                for(int i=0 ; i<children.size() ; i++)
+                    builder.append(recursive_walk(children.get(i), indent+1));
+
+                for(int i=0 ; i<indent ; i++)
+                    builder.append("\t");
+
+                builder.append("</").append(tokenName).append(">\r\n");
+            }
+
+            return builder.toString();
+        }
+    }
+    private static String encodeXML(String text)
+    {
+        text = text.replaceAll("&", "&amp;");
+        text = text.replaceAll("\"", "&quot;");
+        text = text.replaceAll("'", "&apos;");
+        text = text.replaceAll("<", "&lt;");
+        text = text.replaceAll(">", "&gt;");
+        text = text.replaceAll("\0", "\\\\x00");
+
+        text = text.replaceAll(String.valueOf((char)0x4), "\\\\x04");
+        text = text.replaceAll(String.valueOf((char)0xC), "\\\\x0C");
+        text = text.replaceAll(String.valueOf((char)0x1), "\\\\x01");
+        text = text.replaceAll(String.valueOf((char)0x7), "\\\\x07");
+        text = text.replaceAll(String.valueOf((char)0x8), "\\\\x08");
+        text = text.replaceAll(String.valueOf((char)0x6), "\\\\x06");
+        text = text.replaceAll(String.valueOf((char)0x0A), "\\\\x0A");
+        text = text.replaceAll(String.valueOf((char)0x0D), "\\\\x0D");
+        text = text.replaceAll(String.valueOf((char)0x10), "\\\\x10");
+        text = text.replaceAll(String.valueOf((char)0x13), "\\\\x13");
+        text = text.replaceAll(String.valueOf((char)0xFF), "\\\\xFF");
+        text = text.replaceAll(String.valueOf((char)0x2F), "\\\\x2F");
+        text = text.replaceAll(String.valueOf((char)0xce), "\\\\xCE");
+        text = text.replaceAll(String.valueOf((char)0xec), "\\\\xEC");
+        text = text.replaceAll(String.valueOf((char)0xed), "\\\\xED");
+        text = text.replaceAll(String.valueOf((char)0xf4), "\\\\xF4");
+
+        return text;
+    }
+}

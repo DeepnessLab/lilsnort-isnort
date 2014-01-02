@@ -1,0 +1,394 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml;
+using Wintellect.PowerCollections;
+
+namespace PCRETools
+{
+    public enum property_tags
+    {
+        start_of_subject, // ^
+        exact_string,
+        negative_exact_strings,
+        repeatition, // *, +, {}, ?
+        exact_repeatition, // {}
+        backreference, // /x
+        negative_look_ahead, // negated exact string
+        group,
+        or
+    }
+    //--------------------------------------------------------------------------------
+    public class quantifier : IEquatable<quantifier>
+    {
+        public quantifier(){}
+
+        public Set<string> items = new Set<string>();
+        public Set<quantifier> inner_quantifiers = new Set<quantifier>();
+
+        //--------------------------------------------------------------------------------
+        public override string ToString()
+        {
+            string text = "";
+
+            foreach (string s in items)
+            {
+                text += s + "||";
+            }
+
+            if (text.EndsWith("||"))
+                text = text.Remove(text.Length - "||".Length);
+
+            if (inner_quantifiers.Count > 0)
+                text += "(";
+
+            foreach (quantifier q in inner_quantifiers)
+                text += string.Format("{0}||", q.ToString());
+
+            if (text.EndsWith("||"))
+                text = text.Remove(text.Length - "||".Length);
+
+            if (inner_quantifiers.Count > 0)
+                text += ")";
+
+            return text;
+        }
+        //--------------------------------------------------------------------------------
+        public string ToString(int tabcount)
+        {
+            string text = "";
+
+            foreach (string s in items)
+                text += s + "\r\n";
+            
+            foreach (quantifier q in inner_quantifiers)
+            {
+                string qtext = q.ToString(tabcount + 1);
+
+                string tabs = "";
+                for(int i=0 ; i<tabcount ; i++)
+                    tabs += "\t";
+
+                text += string.Format("{0}(\r\n{0}\t{1}\r\n{0})\r\n", tabs, qtext);
+            }
+
+            return text;
+        }
+        //--------------------------------------------------------------------------------
+        public void Add(string item)
+        {
+            items.Add(item);
+        }
+        //--------------------------------------------------------------------------------
+        public void Add(quantifier quant)
+        {
+            inner_quantifiers.Add(quant);
+        }
+        //--------------------------------------------------------------------------------
+        public void Add(quantifier[] quants)
+        {
+            inner_quantifiers.AddMany(quants);
+        }
+        //--------------------------------------------------------------------------------
+        public bool Equals(quantifier other)
+        {
+            foreach (string s in items)
+                if (!other.items.Contains(s))
+                    return false;
+
+            foreach (string s in other.items)
+                if (!items.Contains(s))
+                    return false;
+
+            foreach (quantifier q in inner_quantifiers)
+                if (!other.inner_quantifiers.Contains(q))
+                    return false;
+
+            foreach (quantifier q in other.inner_quantifiers)
+                if (!inner_quantifiers.Contains(q))
+                    return false;
+
+            return true;
+        }
+        //--------------------------------------------------------------------------------
+        public override bool Equals(object obj)
+        {
+            if(!(obj is quantifier))
+                return false;
+
+ 	        quantifier other = (quantifier)obj;
+
+            return this.Equals(other);
+        }
+        //--------------------------------------------------------------------------------
+        public override int GetHashCode()
+        {
+ 	         return items.GetHashCode() * inner_quantifiers.GetHashCode();
+        }
+        //--------------------------------------------------------------------------------
+        public static bool operator == (quantifier a, quantifier b)
+        {
+            return a.Equals(b);
+        }
+        //--------------------------------------------------------------------------------
+        public static bool operator !=(quantifier a, quantifier b)
+        {
+            return !a.Equals(b);
+        }
+        //--------------------------------------------------------------------------------
+        public bool IsEmpty()
+        {
+            return items.Count == 0 && inner_quantifiers.Count == 0;
+        }
+        //--------------------------------------------------------------------------------
+    }
+    //--------------------------------------------------------------------------------
+    public class pcre_xml
+    {
+        private Set<property_tags> tags = new Set<property_tags>();
+        public property_tags[] Tags { get { return tags.ToArray(); } }
+
+        private List<string> exact_strings = new List<string>();
+        public string[] ExactStrings { get { return exact_strings.ToArray(); } }
+        
+        private List<string> negative_exact_strings = new List<string>();
+        public string[] NegativeExactStrings { get { return negative_exact_strings.ToArray(); } }
+
+        private Set<quantifier> quantifierGroups = new Set<quantifier>();
+        public Set<quantifier> QuantifierGroups { get { return quantifierGroups; } }
+
+        //--------------------------------------------------------------------------------
+        public pcre_xml(string xml)
+        {
+            parse(xml);
+        }
+        //--------------------------------------------------------------------------------
+        private void parse(string xml)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            xmldoc.LoadXml(xml);
+
+            XmlNode root = xmldoc.FirstChild;
+
+            parse_exact_strings(root);
+
+            parse_tags(root);
+
+            quantifierGroups = parse_quantifiers(root);
+        }
+        //--------------------------------------------------------------------------------
+        public string quantifiers_string()
+        {
+            List<string> quants = new List<string>();
+
+            foreach (quantifier quant in QuantifierGroups)
+                quants.Add(quant.ToString());
+
+            quants.Sort();
+
+            string res = "";
+
+            foreach(string s in quants)
+                res += s + "||";
+
+            return res;
+        }
+        //--------------------------------------------------------------------------------
+        private Set<quantifier> parse_quantifiers(XmlNode node, bool is_root = true)
+        {
+            XmlDocument doc = new XmlDocument();
+            List<XmlNode> to_parse = new List<XmlNode>();
+            doc.LoadXml(node.OuterXml);
+            
+            if(!is_root)
+            {
+                XmlNodeList xmllistpygroups = doc.FirstChild.SelectNodes(string.Format("/{0}/ELEMENT/NAMED_CAPTURING_GROUP_PYTHON", node.Name));
+                foreach (XmlNode xmlnode in xmllistpygroups)
+                    to_parse.Add(xmlnode);
+
+                XmlNodeList xmllistgroups = doc.FirstChild.SelectNodes(string.Format("/{0}/ELEMENT/CAPTURING_GROUP", node.Name));
+                foreach (XmlNode xmlnode in xmllistgroups)
+                    to_parse.Add(xmlnode);
+            }
+
+            XmlNodeList xmllistquantifiers = doc.FirstChild.SelectNodes(string.Format("/{0}/ELEMENT[@type='QUANTIFIER']", node.Name));
+            foreach(XmlNode xmlnode in xmllistquantifiers)
+                to_parse.Add(xmlnode);
+            
+            XmlNodeList xmlgroupelement = doc.FirstChild.SelectNodes(string.Format("/{0}/ELEMENT[@type='group']", node.Name));
+            foreach (XmlNode xmlnode in xmlgroupelement)
+                to_parse.Add(xmlnode);
+            
+            if (to_parse.Count == 0)
+                return new Set<quantifier>();
+
+            Set<quantifier> res = new Set<quantifier>();
+
+            // if not root, this node is also a quantifier not.
+            if (!is_root)
+            {
+                List<XmlNode> curquantifier = new List<XmlNode>();
+                curquantifier.Add(node);
+
+                for (int i = 0; i < curquantifier.Count; i++)
+                {
+                    quantifier q = extract_quantifier(curquantifier[i], ref curquantifier);
+                    if (!q.IsEmpty())
+                        res.Add(q);
+                }
+            }
+
+            // look in all child quantifiers
+            for (int i = 0; i < to_parse.Count; i++)
+            {
+                XmlNode xmlquantifier = to_parse[i];
+                quantifier q = extract_quantifier(xmlquantifier, ref to_parse);
+
+                if (!q.IsEmpty())
+                    res.Add(q);
+            }
+
+            return res;
+        }
+        //--------------------------------------------------------------------------------
+        private quantifier extract_quantifier(XmlNode xmlquantifier, ref List<XmlNode> to_parse)
+        {
+            quantifier curquantifier = new quantifier();
+
+            XmlNodeList alts = xmlquantifier.SelectNodes("ALTERNATIVE");
+            foreach (XmlNode alt in alts)
+                curquantifier.Add(parse_quantifiers(alt, false).ToArray());
+                        
+            // get quantifiers
+            XmlNodeList literals = xmlquantifier.SelectNodes("ELEMENT/LITERAL|LITERAL");
+            XmlNodeList whiteSpaces = xmlquantifier.SelectNodes("WhiteSpace");
+            XmlNodeList notWhiteSpaces = xmlquantifier.SelectNodes("NotWhiteSpace");
+            XmlNodeList anys = xmlquantifier.SelectNodes("ANY");
+            XmlNodeList subpattern = xmlquantifier.SelectNodes("CAPTURING_GROUP");
+            XmlNodeList pysubpattern = xmlquantifier.SelectNodes("NAMED_CAPTURING_GROUP_PYTHON");
+            XmlNodeList characters = xmlquantifier.SelectNodes("CHARACTER_CLASS");
+            XmlNodeList negatedcharacters = xmlquantifier.SelectNodes("NEGATED_CHARACTER_CLASS");
+            XmlNodeList ranges = xmlquantifier.SelectNodes("RANGE");
+            XmlNodeList words = xmlquantifier.SelectNodes("WordChar");
+            XmlNodeList digits = xmlquantifier.SelectNodes("DecimalDigit");
+
+            //XmlNodeList notLiterals = xmlquantifier.SelectNodes(string.Format("NEGATED_CHARACTER_CLASS/LITERAL", xmlquantifier.Name));
+            //XmlNodeList negatedWhiteSpaces = xmlquantifier.SelectNodes(string.Format("NEGATED_CHARACTER_CLASS/WhiteSpace", xmlquantifier.Name));
+
+            foreach (XmlNode range in ranges)
+                curquantifier.Add(string.Format("{{{0}}}-{{{1}}}", range.Attributes["min"].Value, range.Attributes["max"].Value));
+
+            foreach (XmlNode word in words)
+                curquantifier.Add(word.Attributes["text"].Value);
+
+            foreach (XmlNode digit in digits)
+                curquantifier.Add(digit.Attributes["text"].Value);
+
+            foreach (XmlNode literal in literals)
+                curquantifier.Add(literal.Attributes["text"].Value);
+
+            foreach (XmlNode whiteSpace in whiteSpaces)
+                curquantifier.Add("\\s");
+
+            foreach (XmlNode notWhiteSpace in notWhiteSpaces)
+                curquantifier.Add("\\S");
+            /*
+            foreach (XmlNode notLiteral in notLiterals)
+                curquantifier.Add("~" + notLiteral.Attributes["text"].Value);
+
+            foreach (XmlNode negatedWhiteSpace in negatedWhiteSpaces)
+                curquantifier.Add("~\\s");
+            */
+            foreach (XmlNode any in anys)
+                curquantifier.Add("ANY");
+
+            foreach (XmlNode sp in subpattern)
+                curquantifier.Add(parse_quantifiers(sp, false).ToArray());
+
+            foreach (XmlNode sp in pysubpattern)
+                curquantifier.Add(parse_quantifiers(sp, false).ToArray());
+
+            foreach (XmlNode character in characters)
+                to_parse.Add(character);
+
+            foreach (XmlNode character in negatedcharacters)
+                to_parse.Add(character);
+
+            return curquantifier;
+        }
+        //--------------------------------------------------------------------------------
+        private void parse_exact_strings(XmlNode node)
+        {
+            XmlNodeList exacts = node.SelectNodes("/"+node.Name+"/ELEMENT/LITERAL[@text]");
+            foreach(XmlNode exact in exacts)
+            {
+                exact_strings.Add(exact.Attributes["text"].Value);
+            }
+
+            XmlNodeList negatives = node.SelectNodes("/"+node.Name+"/ELEMENT[@type='NEGATIVE_LOOK_AHEAD']/*/ELEMENT/LITERAL[@text]");
+            foreach (XmlNode negative_exact in negatives)
+            {
+                negative_exact_strings.Add(negative_exact.Attributes["text"].Value);
+            }
+
+            for(int i=0 ; i<exact_strings.Count ; i++)
+            {
+                exact_strings[i] = exact_strings[i];
+            }
+
+            for (int i = 0; i < negative_exact_strings.Count; i++)
+            {
+                negative_exact_strings[i] = negative_exact_strings[i];
+            }
+        }
+        //--------------------------------------------------------------------------------
+        private void parse_tags(XmlNode node)
+        {
+            if (node.SelectNodes("//ELEMENT[@type='start_of_subject']").Count > 0)
+                tags.Add(property_tags.start_of_subject);
+
+            if(exact_strings.Count > 0)
+                tags.Add(property_tags.exact_string);
+            
+            if(negative_exact_strings.Count > 0)
+                tags.Add(property_tags.negative_exact_strings);
+
+            if (node.SelectNodes("//ELEMENT[@type='QUANTIFIER']").Count > 0)
+                tags.Add(property_tags.repeatition);
+
+            if (node.SelectNodes("//ELEMENT[@type='named backreference python']").Count > 0)
+                tags.Add(property_tags.backreference);
+
+            if (node.SelectNodes("//ELEMENT[@type='NEGATIVE_LOOK_AHEAD']").Count > 0)
+                tags.Add(property_tags.negative_look_ahead);
+
+            if (node.SelectNodes("//ELEMENT[@type='group']").Count > 0)
+                tags.Add(property_tags.group);
+
+            if (node.SelectNodes("//CAPTURING_GROUP[@type='OR']").Count > 0)
+                tags.Add(property_tags.or);
+
+            if (node.SelectNodes("//ELEMENT[@exact]").Count > 0)
+                tags.Add(property_tags.exact_repeatition);
+        }
+        //--------------------------------------------------------------------------------
+        public override string ToString()
+        {
+            string res = "Tags: ";
+            foreach (property_tags tag in tags)
+                res += tag.ToString()+"|";
+
+            res += "\r\nStrings: ";
+            foreach (string str in exact_strings)
+                res += str.ToString()+"|";
+
+            res += "\r\nNegative Strings: ";
+            foreach (string str in negative_exact_strings)
+                res += str.ToString() + "|";
+
+            return res;
+        }
+        //--------------------------------------------------------------------------------
+    }
+}

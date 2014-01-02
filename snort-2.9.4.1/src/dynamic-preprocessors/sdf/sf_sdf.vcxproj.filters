@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{07f7e7f5-0913-40f4-aeb4-e40546d30993}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{fb838626-19dd-46a1-9dae-5fb6dd1710a7}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{706ee645-71e3-41a7-9243-827bd60d0e2c}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\include\sf_dynamic_preproc_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sfPolicyUserData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spp_sdf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\strtok_r.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdf_credit_card.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdf_detection_option.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdf_pattern_match.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdf_us_ssn.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sdf_credit_card.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdf_detection_option.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdf_pattern_match.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdf_us_ssn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sf_preproc_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spp_sdf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

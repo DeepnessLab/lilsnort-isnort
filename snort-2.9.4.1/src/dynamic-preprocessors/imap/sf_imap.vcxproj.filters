@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{fa7d5532-5f18-4819-aa48-d134a794a98f}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{46511578-baf7-4ad8-a9c4-5a505041610b}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{30314a7d-2d25-4b8a-9fdb-1adf97393027}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="imap_config.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imap_log.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imap_util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\mempool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_base64decode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_dynamic_preproc_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_email_attach_decode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_sdlist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sfPolicyUserData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="snort_imap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spp_imap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\util_unfold.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="imap_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imap_log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imap_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mempool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sf_email_attach_decode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sf_preproc_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sf_sdlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="snort_imap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spp_imap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

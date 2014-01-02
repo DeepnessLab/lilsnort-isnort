@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>api;sfbpf;../src/win32/WIN32-Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_LIB;DAQ_DLL;HAVE_CONFIG_H;BUILD_PCAP_MODULE;STATIC_MODULE_LIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Debug\daq.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\daq.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\daq.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>api;sfbpf;../src/win32/WIN32-Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_LIB;DAQ_DLL;HAVE_CONFIG_H;BUILD_PCAP_MODULE;STATIC_MODULE_LIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\daq.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\daq.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\daq.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="api\daq.h" />
+    <ClInclude Include="api\daq_api.h" />
+    <ClInclude Include="api\daq_common.h" />
+    <ClInclude Include="sfbpf\arcnet.h" />
+    <ClInclude Include="sfbpf\atmuni31.h" />
+    <ClInclude Include="sfbpf\bittypes.h" />
+    <ClInclude Include="sfbpf\ethertype.h" />
+    <ClInclude Include="sfbpf\gencode.h" />
+    <ClInclude Include="sfbpf\ieee80211.h" />
+    <ClInclude Include="sfbpf\IP6_misc.h" />
+    <ClInclude Include="sfbpf\ipnet.h" />
+    <ClInclude Include="sfbpf\llc.h" />
+    <ClInclude Include="sfbpf\namedb.h" />
+    <ClInclude Include="sfbpf\nlpid.h" />
+    <ClInclude Include="sfbpf\ppp.h" />
+    <ClInclude Include="sfbpf\sf-redefines.h" />
+    <ClInclude Include="sfbpf\sfbpf-int.h" />
+    <ClInclude Include="sfbpf\sfbpf.h" />
+    <ClInclude Include="sfbpf\sfbpf_dlt.h" />
+    <ClInclude Include="sfbpf\sll.h" />
+    <ClInclude Include="sfbpf\sunatmpos.h" />
+    <ClInclude Include="sfbpf\win32-stdinc.h" />
+    <ClInclude Include="os-daq-modules\daq_static_modules.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="api\daq_base.c" />
+    <ClCompile Include="api\daq_mod_ops.c" />
+    <ClCompile Include="sfbpf\sf_bpf_filter.c" />
+    <ClCompile Include="sfbpf\sf_bpf_printer.c" />
+    <ClCompile Include="sfbpf\sf_gencode.c" />
+    <ClCompile Include="sfbpf\sf_nametoaddr.c">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../src/win32/WIN32-Includes/WinPCAP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../src/win32/WIN32-Includes/WinPCAP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="sfbpf\sf_optimize.c" />
+    <ClCompile Include="sfbpf\sfbpf-int.c" />
+    <ClCompile Include="os-daq-modules\daq_pcap.c">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../src/win32/WIN32-Includes/WinPCAP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../src/win32/WIN32-Includes/WinPCAP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="os-daq-modules\daq_static_modules.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="sfbpf\grammar.y">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\cygwin\bin\bison -d -psfbpf_lval -osfbpf/%(Filename).c sfbpf/%(Filename).y  
+c:\cygwin\bin\mv sfbpf/%(Filename).h sfbpf/tokdefs.h</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sfbpf/$(InputName).c;sfbpf/tokdefs.h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\cygwin\bin\bison -d -psfbpf_lval -osfbpf/%(Filename).c sfbpf/%(Filename).y  
+c:\cygwin\bin\mv sfbpf/%(Filename).h sfbpf/tokdefs.h</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sfbpf/$(InputName).c;sfbpf/tokdefs.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="sfbpf\scanner.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\cygwin\bin\flex -i -Psfbpf_lval -osfbpf/%(Filename).c sfbpf/%(Filename).l</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sfbpf/$(InputName).c;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\cygwin\bin\flex -i -Psfbpf_lval -osfbpf/%(Filename).c sfbpf/%(Filename).l</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sfbpf/$(InputName).c;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

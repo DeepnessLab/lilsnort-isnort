@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6b0ad8fa-089f-4a8c-b7ea-974208fea67b}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6dcbaa3f-93c2-4daa-9ce6-435abbb23940}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{16fd0c69-4947-4023-b47d-1661b4a08fbb}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dce2_cl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_co.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_config.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_event.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_http.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_list.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_paf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_roptions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_smb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_stats.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_tcp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_udp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dce2_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\win32\WIN32-Code\inet_aton.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\win32\WIN32-Code\inet_pton.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_dynamic_preproc_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sf_ip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sfPolicyUserData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sfrt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\sfrt_dir.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="snort_dce2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spp_dce2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\win32\WIN32-Code\strtok_r.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dce2_cl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_co.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_http.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_paf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_roptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_session.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_smb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_tcp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_udp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dce2_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sf_preproc_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="snort_dce2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spp_dce2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

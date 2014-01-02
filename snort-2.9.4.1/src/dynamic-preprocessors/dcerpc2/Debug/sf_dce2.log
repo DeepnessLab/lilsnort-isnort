@@ -1,0 +1,9 @@
+﻿Build started 09/09/2013 14:04:38.
+     1>Project "D:\My Stuff\Studies\2nd Degree\Year 3\Networks Workshop\snort-2.9.4.1\src\dynamic-preprocessors\dcerpc2\sf_dce2.vcxproj" on node 3 (clean target(s)).
+     1>_PrepareForClean:
+         Deleting file ".\Debug\sf_dce2.lastbuildstate".
+     1>Done Building Project "D:\My Stuff\Studies\2nd Degree\Year 3\Networks Workshop\snort-2.9.4.1\src\dynamic-preprocessors\dcerpc2\sf_dce2.vcxproj" (clean target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.04
